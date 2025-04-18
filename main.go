@@ -58,6 +58,20 @@ func scanGitFolders(folder []string, folder string) []string {
 func recursiveScanFolder(folder string) []string {
   return scanGitFolders(make([]string, 0), folder)
 }
+
+//getDotFilePath returns the dot file for the repos list
+//Creates it and the enclosing folder if it does not exist
+func getDotFilePath() string {
+  usr, err := user.Current()
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  dotFile := usr.HomeDir + "/.gogitlocalstats"
+
+  return dotFile
+}
+
 //stats generates a nice graph of your Git contributions
 func stats(email string) {
   print("stats")
