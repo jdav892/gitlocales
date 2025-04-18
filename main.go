@@ -3,7 +3,22 @@ package main
 import (
   "flag"
   "fmt"
+  "os/user"
 )
+//User represents a user account
+type User struct {
+  //Uid is the user ID
+  Uid string
+  //Gid is the primary group ID
+  Gid string
+  //User name is the login name
+  Username  string
+  //Name is the users real or display name
+  Name  string
+  //HomeDir is the path to the user's home directory(if it exists)
+  HomeDir string
+  
+}
 
 
 //scan given a path crawls it and its subfolders
