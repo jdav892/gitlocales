@@ -87,6 +87,31 @@ func getDotFilePath() string {
   return dotFile
 }
 
+//addNewSliceElementsToFile given a slice of strings representing paths stores them
+//to file system
+func addNewSliceElementsToFile(filePath string, newRepos []string) {
+  existingRepos := parseFileLinesToSlice(filePath)
+  repos := joinSlices(newRepos, existingRepos)
+  dumpStringtSliceToFile(repos, filePath)
+}
+
+func parseFileLinesToSlice(filePath string) []string {
+  f := openFile(filePath)
+  defer f.Close()
+
+  var lines []string
+  scanner := bufio.NewScanner(f)
+  for scanner.Scan() {
+    lines = append(lines, scanner.Text())
+  }
+  if err := scanner.Err(); err != nil {
+    if err != io.EOF {
+      panic(err)
+    }
+  }
+  return lines
+}
+
 //stats generates a nice graph of your Git contributions
 func stats(email string) {
   print("stats")
