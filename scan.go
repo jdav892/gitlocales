@@ -11,15 +11,6 @@ import (
   "strings"
 )
 
-
-
-
-//recursiveScanFolder starts the recursive search of git repositories
-//living in the 'folder' subtree
-func recursiveScanFolder(folder string) []string {
-  return scanGitFolders(make([]string, 0), folder)
-}
-
 //getDotFilePath returns the dot file for the repos list
 //Creates it and the enclosing folder if it does not exist
 func getDotFilePath() string {
@@ -59,6 +50,13 @@ func parseFileLinesToSlice(filePath string) []string {
   }
   return lines
 }
+
+//recursiveScanFolder starts the recursive search of git repositories
+//living in the 'folder' subtree
+func recursiveScanFolder(folder string) []string {
+  return scanGitFolders(make([]string, 0), folder)
+}
+
 //scan scans a new folder for Git repos 
 func scan(folder string) {
   fmt.Printf("Found folder:\n\n")
