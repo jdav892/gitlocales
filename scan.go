@@ -90,6 +90,13 @@ func sliceContains(slice []string, value string) bool {
   return false
 }
 
+//dumpStringSliceToFile writes content to the file in path `filePath`
+func dumpStringSliceToFile(repos []string, filePath string) {
+  content := strings.Join(repos, "\n")
+  ioutil.WriteFile(filePath, []byte(content), 0755)
+}
+
+
 //recursiveScanFolder starts the recursive search of git repositories
 //living in the 'folder' subtree
 func recursiveScanFolder(folder string) []string {
