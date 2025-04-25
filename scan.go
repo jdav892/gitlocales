@@ -24,6 +24,24 @@ func getDotFilePath() string {
   return dotFile
 }
 
+//openFile opens the file located at 'filePath'. Creates it if not existing.
+func openFile(filePath string) *os.File {
+  f, err := os.OpenFile(filePath, os.O.APPEND|os.O_WRONLY, 0755)
+  if err != nil {
+    if os.IsNotExist(err) {
+      //file does not exist
+      _, err = os.Create(filePath)
+      if err != nil {
+        panic(err)
+      }
+    }else {
+      //other error
+      panic(err)
+    }
+  }
+  return f
+}
+
 //addNewSliceElementsToFile given a slice of strings representing paths stores them
 //to file system
 func addNewSliceElementsToFile(filePath string, newRepos []string) {
