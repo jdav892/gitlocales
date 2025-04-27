@@ -26,7 +26,7 @@ func getDotFilePath() string {
 
 //openFile opens the file located at 'filePath'. Creates it if not existing.
 func openFile(filePath string) *os.File {
-  f, err := os.OpenFile(filePath, os.O.APPEND|os.O_WRONLY, 0755)
+  f, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0755)
   if err != nil {
     if os.IsNotExist(err) {
       //file does not exist
@@ -40,14 +40,6 @@ func openFile(filePath string) *os.File {
     }
   }
   return f
-}
-
-//addNewSliceElementsToFile given a slice of strings representing paths stores them
-//to file system
-func addNewSliceElementsToFile(filePath string, newRepos []string) {
-  existingRepos := parseFileLinesToSlice(filePath)
-  repos := joinSlices(newRepos, existingRepos)
-  dumpStringtSliceToFile(repos, filePath)
 }
 
 //parseFileLinesToSlice given a file path string, gets the content 
@@ -69,6 +61,17 @@ func parseFileLinesToSlice(filePath string) []string {
   return lines
 }
 
+//sliceContains returns true if `slice` conitains `value`
+func sliceContains(slice []string, value string) bool {
+  for _, v := range slice {
+    if v == value {
+      return true
+    }
+  }
+  return false
+}
+
+
 //joinSlices adds the elemtn of the `new` slice
 //into the `existing` slice, only if not already there
 func joinSlices(new []string, existing []string) []string {
@@ -80,22 +83,19 @@ func joinSlices(new []string, existing []string) []string {
   return existing
 }
 
-//sliceContains returns true if `slice` conitains `value`
-func sliceContains(slice []string, value string) bool {
-  for _, v := range slice {
-    if v == value {
-      return true
-    }
-  }
-  return false
-}
-
 //dumpStringSliceToFile writes content to the file in path `filePath`
-func dumpStringSliceToFile(repos []string, filePath string) {
+func dumpStringsSliceToFile(repos []string, filePath string) {
   content := strings.Join(repos, "\n")
   ioutil.WriteFile(filePath, []byte(content), 0755)
 }
 
+//addNewSliceElementsToFile given a slice of strings representing paths stores them
+//to file system
+func addNewSliceElementsToFile(filePath string, newRepos []string) {
+  existingRepos := parseFileLinesToSlice(filePath)
+  repos := joinSlices(newRepos, existingRepos)
+  dumpStringsSliceToFile(repos, filePath)
+}
 
 //recursiveScanFolder starts the recursive search of git repositories
 //living in the 'folder' subtree
@@ -106,7 +106,7 @@ func recursiveScanFolder(folder string) []string {
 //scan scans a new folder for Git repos 
 func scan(folder string) {
   fmt.Printf("Found folder:\n\n")
-  repositores := recursiveScanFolder(folder)
+  repositories := recursiveScanFolder(folder)
   filePath := getDotFilePath()
   addNewSliceElementsToFile(filePath, repositories)
   fmt.Printf("\n\nSuccessfully added\n\n")
@@ -116,7 +116,7 @@ func scan(folder string) {
 //scanGitFolders returns a list of subfolders of 'folder' ending with '.git'
 //Returns the base folder of the repo, the .git folder parent.
 //Recursively searches in the subfolders by passing an existing 'folders' slice.
-func scanGitFolders(folder []string, folder string) []string {
+func scanGitFolders(folders []string, folder string) []string {
   // trim the last '/'
   folder = strings.TrimSuffix(folder, "/")
 
