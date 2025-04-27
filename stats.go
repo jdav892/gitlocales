@@ -119,3 +119,22 @@ func calcOffset() int {
 
   return offset
 }
+
+//printCommitStats prints the commits stats 
+func printCommitStats(commits map[int]int) {
+  keys := sortMapIntoSlices(commits)
+  cols := buildCols(keys, commits)
+  printCells(cols)
+}
+
+//sortMapIntoSlices returns a slice of indexes of a map, ordered
+func sortMapIntoSlices(m map[int]int) []int {
+  //order map
+  //To store the keys in slice sorted order
+  var keys []int
+  for k := range m {
+    keys = append(keys, k)
+  }
+  sort.Ints(keys)
+  return keys
+}
