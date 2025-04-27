@@ -2,6 +2,10 @@ package main
 
 import (
   "fmt"
+  "github.com/go-git/go-git"
+  "github.com/go-git/go-git/plumbing/object"
+  "sort"
+  "time"
 )
 
 func stats(email string) {
@@ -69,3 +73,26 @@ func fillCommits(email string, path string, commits map[int]int) map[int]int {
   return commits
 }
 
+//getBeginningOfDay given a time. Time calculates the start time of that day 
+func getBeginningOfDay(t time.Time) time.Time {
+  year, month, day := t.Date()
+  startOfDay := time.Date(year, month, day, 0, 0, 0, 0, t.Location())
+  return startOfDay
+}
+
+//countDaysSinceDate counts how many days payssed since the passed `date`
+func countDaysSinceDate(date time.Time) int {
+  days := 0
+  now := getBeginningOfDay(time.Now())
+  for date.Before(now) {
+    date = date.Add(time.Hour * 24)
+    days++
+    if days > daysInLastSixMonths {
+      return outOfRange
+    }
+  }
+  return days
+}
+
+//calcOffset determines and returns the amount of days missing to fillCommits
+//the last row of the stats graph
