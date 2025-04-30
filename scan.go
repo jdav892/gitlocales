@@ -116,7 +116,7 @@ func scan(folder string) {
 //scanGitFolders returns a list of subfolders of 'folder' ending with '.git'
 //Returns the base folder of the repo, the .git folder parent.
 //Recursively searches in the subfolders by passing an existing 'folders' slice.
-func scanGitFolders(folders []string, folder string) []string {
+func scanGitFolders(folder []string, folder string) []string {
   // trim the last '/'
   folder = strings.TrimSuffix(folder, "/")
 
