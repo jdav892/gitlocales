@@ -2,10 +2,7 @@ module main
 
 go 1.24.0
 
-require (
-	github.com/go-git/go-git v4.7.0+incompatible
-	github.com/go-git/go-git/v5 v5.16.0
-)
+require github.com/go-git/go-git/v5 v5.16.0
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
@@ -26,6 +23,5 @@ require (
 	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
-	gopkg.in/src-d/go-git.v4 v4.13.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )

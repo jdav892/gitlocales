@@ -3,33 +3,41 @@ package main
 import (
   "fmt"
   "github.com/go-git/go-git/v5"
-  "github.com/go-git/go-git/plumbing/object"
   "sort"
   "time"
 )
 
+const outOfRange = 99999
+const daysInLastSixMonths = 183
+const weeksInLastSixMonth = 26
+
+type column []int
+
+//stats calculates and prints the stats
 func stats(email string) {
   commits := processRepositories(email)
   printCommitStats(commits)
 }
 
-//processRepositories given a user email
-//returns commits made in the last 6 months
-func processRepositories(email string) map[int]int {
-  filePath := getDotFilePath()
-  repos := parseFileLinesToSlice(filePath)
-  daysInMap := daysInLastSixMonths
+//getBeginningOfDay given a time. Time calculates the start time of that day 
+func getBeginningOfDay(t time.Time) time.Time {
+  year, month, day := t.Date()
+  startOfDay := time.Date(year, month, day, 0, 0, 0, 0, t.Location())
+  return startOfDay
+}
 
-  commits := make(map[int]int, daysInMap)
-  for i := daysInMap; i > 0; i-- {
-    commits[i] = 0
+//countDaysSinceDate counts how many days payssed since the passed `date`
+func countDaysSinceDate(date time.Time) int {
+  days := 0
+  now := getBeginningOfDay(time.Now())
+  for date.Before(now) {
+    date = date.Add(time.Hour * 24)
+    days++
+    if days > daysInLastSixMonths {
+      return outOfRange
+    }
   }
-
-  for _, path := range repos {
-    commits = fileCommits(email, path, commits)
-  }
-  
-  return commits
+  return days
 }
 
 //fillCommits given a repository found in `path`, gets the commits and 
@@ -53,7 +61,7 @@ func fillCommits(email string, path string, commits map[int]int) map[int]int {
   //iterate the commits
   offset := calcOffset()
   err = iterator.ForEach(func(c *object.Commit) error {
-    daysAgo := countDaysSinceDate(c.Auther.When) + offset
+    daysAgo := countDaysSinceDate(c.Author.When) + offset
     
     if c.Author.Email != email {
       return nil
@@ -73,25 +81,23 @@ func fillCommits(email string, path string, commits map[int]int) map[int]int {
   return commits
 }
 
-//getBeginningOfDay given a time. Time calculates the start time of that day 
-func getBeginningOfDay(t time.Time) time.Time {
-  year, month, day := t.Date()
-  startOfDay := time.Date(year, month, day, 0, 0, 0, 0, t.Location())
-  return startOfDay
-}
+//processRepositories given a user email
+//returns commits made in the last 6 months
+func processRepositories(email string) map[int]int {
+  filePath := getDotFilePath()
+  repos := parseFileLinesToSlice(filePath)
+  daysInMap := daysInLastSixMonths
 
-//countDaysSinceDate counts how many days payssed since the passed `date`
-func countDaysSinceDate(date time.Time) int {
-  days := 0
-  now := getBeginningOfDay(time.Now())
-  for date.Before(now) {
-    date = date.Add(time.Hour * 24)
-    days++
-    if days > daysInLastSixMonths {
-      return outOfRange
-    }
+  commits := make(map[int]int, daysInMap)
+  for i := daysInMap; i > 0; i-- {
+    commits[i] = 0
   }
-  return days
+
+  for _, path := range repos {
+    commits = fileCommits(email, path, commits)
+  }
+  
+  return commits
 }
 
 //calcOffset determines and returns the amount of days missing to fillCommits
@@ -118,6 +124,37 @@ func calcOffset() int {
   }
 
   return offset
+}
+
+//printCell given a cell value prints it with a different format 
+//based on the value amount, and on the `today` flag.
+func printCell(val int, today bool) {
+  escape := "\033[0;37;30m"
+  switch {
+  case val > 0 && val < 5:
+    escape = "\033[1;30;47m"
+  case val >= 5 && val < 10:
+    escape = "\033[1;30;43m"
+  case val >= 10:
+    escape = "\033[1;30;42m"
+  }
+  if today {
+    escape = "\033[1;37;45m"
+  }
+  if val == 0 {
+    fmt.Printf(escape + "  - " + "\033[0m")
+    return
+  }
+
+  str := "  %d "
+  switch {
+  case val >= 10:
+    str = " %d "
+  case val >= 100:
+    str = "%d "
+  }
+
+  fmt.Printf(escape+str+"\033[0m", val)
 }
 
 //printCommitStats prints the commits stats 

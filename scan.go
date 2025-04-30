@@ -4,7 +4,6 @@ import (
   "bufio"
   "fmt"
   "io"
-  "io/ioutil"
   "log"
   "os"
   "os/user"
@@ -19,7 +18,7 @@ func getDotFilePath() string {
     log.Fatal(err)
   }
 
-  dotFile := usr.HomeDir + "/.gogitlocalstats"
+  dotFile := usr.HomeDir + "/.gitlogs"
 
   return dotFile
 }
@@ -86,7 +85,7 @@ func joinSlices(new []string, existing []string) []string {
 //dumpStringSliceToFile writes content to the file in path `filePath`
 func dumpStringsSliceToFile(repos []string, filePath string) {
   content := strings.Join(repos, "\n")
-  ioutil.WriteFile(filePath, []byte(content), 0755)
+  os.WriteFile(filePath, []byte(content), 0755)
 }
 
 //addNewSliceElementsToFile given a slice of strings representing paths stores them
@@ -116,7 +115,7 @@ func scan(folder string) {
 //scanGitFolders returns a list of subfolders of 'folder' ending with '.git'
 //Returns the base folder of the repo, the .git folder parent.
 //Recursively searches in the subfolders by passing an existing 'folders' slice.
-func scanGitFolders(folder []string, folder string) []string {
+func scanGitFolders(folders []string, folder string) []string {
   // trim the last '/'
   folder = strings.TrimSuffix(folder, "/")
 
