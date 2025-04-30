@@ -2,7 +2,7 @@ package main
 
 import (
   "fmt"
-  "github.com/go-git/go-git"
+  "github.com/go-git/go-git/v5"
   "github.com/go-git/go-git/plumbing/object"
   "sort"
   "time"
@@ -97,7 +97,7 @@ func countDaysSinceDate(date time.Time) int {
 //calcOffset determines and returns the amount of days missing to fillCommits
 //the last row of the stats graph
 func calcOffset() int {
-  var offset := int
+  var offset int
   weekday := time.Now().Weekday()
 
   switch weekday {
@@ -207,3 +207,19 @@ func printMonths() {
   }
   fmt.Printf("\n")
 }
+
+//printDayCol given the day number (0 is Sunday) prints the day name,
+//alternating the rows (prints just 2,4,6)
+func printDayCol(day int) {
+  out := "    "
+  switch day {
+  case 1:
+    out = " Mon "
+  case 3:
+    out = " Wed "
+  case 5:
+    out = " Fri "
+  }
+  fmt.Printf(out)
+}
+
